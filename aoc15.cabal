@@ -3,7 +3,7 @@ version:             0.1.0.0
 -- synopsis:
 -- description:
 homepage:            https://github.com/trezona-lecomte/aoc15#readme
-license:             MITE
+license:             MIT
 license-file:        LICENSE
 author:              Kieran Trezona-le Comte
 maintainer:          trezona.lecomte@gmail.com
@@ -17,7 +17,9 @@ library
   hs-source-dirs:      src
   exposed-modules:     Lib
   build-depends:       base >= 4.7 && < 5
+                     , split
   default-language:    Haskell2010
+  ghc-options:         -Wall -Wincomplete-uni-patterns -Wincomplete-record-updates
 
 executable aoc15-exe
   hs-source-dirs:      app
