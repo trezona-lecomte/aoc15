@@ -9,3 +9,4 @@ main = do
   dayTwoA
   dayTwoB
   dayThreeA
+  dayThreeB

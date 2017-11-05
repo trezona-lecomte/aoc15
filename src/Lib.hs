@@ -4,6 +4,7 @@ module Lib
     , dayTwoA
     , dayTwoB
     , dayThreeA
+    , dayThreeB
     ) where
 
 import           Data.List       (delete, elemIndex)
@@ -142,3 +143,18 @@ deliver '<' pos = (fst pos - 1, snd pos)
 deliver 'v' pos = (fst pos, snd pos - 1)
 deliver '^' pos = (fst pos, snd pos + 1)
 deliver _ _     = undefined
+
+
+splitInstructions :: String -> (String, String) -> (String, String)
+splitInstructions (x:y:xs) (a, b) = splitInstructions xs (x : a, y : b)
+splitInstructions [x]      (a, b) = (x : a, b)
+splitInstructions []       (a, b) = (a, b)
+
+
+dayThreeB :: IO ()
+dayThreeB = do
+  input <- readInput "Three"
+  let (santa, robo) = splitInstructions input ("","")
+      locations = Set.union (uniqLocations santa) (uniqLocations robo)
+  printResult "Three (B)" $ Set.size locations
+  return ()
