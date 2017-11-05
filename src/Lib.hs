@@ -3,10 +3,12 @@ module Lib
     , dayOneB
     , dayTwoA
     , dayTwoB
+    , dayThreeA
     ) where
 
-import Data.List (elemIndex, delete)
-import Data.List.Split (splitOn)
+import           Data.List       (delete, elemIndex)
+import           Data.List.Split (splitOn)
+import qualified Data.Set        as Set
 
 
 -- Inputs
@@ -39,14 +41,14 @@ dayOneB = do
   let answer = elemIndex (-1) $ scanl parseParen 0 input
   case answer of
     Just index -> printResult "One (B)" index
-    Nothing -> print "Failed to find index 0"
+    Nothing    -> print "Failed to find index 0"
   return ()
 
 
 parseParen :: Integer -> Char -> Integer
 parseParen n '(' = n + 1
 parseParen n ')' = n - 1
-parseParen _ _ = undefined
+parseParen _ _   = undefined
 
 
 
@@ -118,3 +120,25 @@ parsePresent line =
       Present (read w) (read h) (read l)
     _ ->
       undefined
+
+
+-- Day Three
+
+dayThreeA :: IO ()
+dayThreeA = do
+  input <- readInput "Three"
+  printResult "Three (A)" $ Set.size $ uniqLocations input
+  return ()
+
+
+uniqLocations :: String -> Set.Set (Int, Int)
+uniqLocations input =
+  Set.fromList $ scanr deliver (0,0) input
+
+
+deliver ::  Char -> (Int, Int) ->(Int, Int)
+deliver '>' pos = (fst pos + 1, snd pos)
+deliver '<' pos = (fst pos - 1, snd pos)
+deliver 'v' pos = (fst pos, snd pos - 1)
+deliver '^' pos = (fst pos, snd pos + 1)
+deliver _ _     = undefined

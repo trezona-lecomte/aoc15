@@ -8,3 +8,4 @@ main = do
   dayOneB
   dayTwoA
   dayTwoB
+  dayThreeA
