@@ -1,3 +1,5 @@
+{-# LANGUAGE OverloadedStrings #-}
+
 module Lib
     ( dayOneA
     , dayOneB
@@ -5,11 +7,17 @@ module Lib
     , dayTwoB
     , dayThreeA
     , dayThreeB
+    , dayFourAB
     ) where
 
 import           Data.List       (delete, elemIndex)
 import           Data.List.Split (splitOn)
 import qualified Data.Set        as Set
+import qualified Data.ByteString as BS
+import qualified Data.ByteString.Char8 as Char8
+import qualified Data.ByteString.Base16 as Base16
+import           Crypto.Hash.MD5
+
 
 
 -- Inputs
@@ -158,3 +166,28 @@ dayThreeB = do
       locations = Set.union (uniqLocations santa) (uniqLocations robo)
   printResult "Three (B)" $ Set.size locations
   return ()
+
+
+-- Day Four
+
+dayFourAB :: IO ()
+dayFourAB = do
+  input <- readInput "Four"
+  answerA <- lowestNumberToProduce "00000" 0 input
+  answerB <- lowestNumberToProduce "000000" 0 input
+  printResult "Four (A)" answerA
+  printResult "Four (B)" answerB
+  return ()
+
+
+lowestNumberToProduce :: BS.ByteString -> Int -> String -> IO Int
+lowestNumberToProduce prefix num key =
+  if prefix `BS.isPrefixOf` performHash key num then
+    return num
+  else
+    lowestNumberToProduce prefix (num + 1) key
+
+
+performHash :: String -> Int -> BS.ByteString
+performHash key number =
+  Base16.encode $ Crypto.Hash.MD5.hash $ Char8.pack (key ++ show number)
