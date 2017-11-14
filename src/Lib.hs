@@ -1,3 +1,4 @@
+{-# OPTIONS_GHC -fno-warn-type-defaults #-}
 {-# LANGUAGE OverloadedStrings #-}
 
 module Lib
@@ -8,15 +9,17 @@ module Lib
     , dayThreeA
     , dayThreeB
     , dayFourAB
+    , dayFiveA
     ) where
 
-import           Data.List       (delete, elemIndex)
-import           Data.List.Split (splitOn)
-import qualified Data.Set        as Set
-import qualified Data.ByteString as BS
-import qualified Data.ByteString.Char8 as Char8
-import qualified Data.ByteString.Base16 as Base16
 import           Crypto.Hash.MD5
+import qualified Data.ByteString        as BS
+import qualified Data.ByteString.Base16 as Base16
+import qualified Data.ByteString.Char8  as Char8
+import           Data.List              (delete, elemIndex, group, isInfixOf,
+                                         sort, elem)
+import           Data.List.Split        (splitOn)
+import qualified Data.Set               as Set
 
 
 
@@ -24,7 +27,7 @@ import           Crypto.Hash.MD5
 
 readInput :: String -> IO String
 readInput day =
-  readFile $ "/Users/kieran/dev/haskell/aoc15/input/day" ++ day
+  readFile $ "/Users/kieran/dev/aoc15/input/day" ++ day
 
 
 -- Results
@@ -191,3 +194,44 @@ lowestNumberToProduce prefix num key =
 performHash :: String -> Int -> BS.ByteString
 performHash key number =
   Base16.encode $ Crypto.Hash.MD5.hash $ Char8.pack (key ++ show number)
+
+
+-- Day Five
+
+dayFiveA :: IO ()
+dayFiveA = do
+  input <- readInput "Five"
+  printResult "Five (A)" $ numberOfNiceStringsA input
+  printResult "Five (B)" $ numberOfNiceStringsB input
+  return ()
+
+
+numberOfNiceStringsA :: String -> Int
+numberOfNiceStringsA str =
+  length (filter isNiceA $ lines str)
+
+
+isNiceA :: String -> Bool
+isNiceA str =
+  containsThreeVowels str && containsAPair str && excludesSpecialPairs str
+
+
+containsThreeVowels :: String -> Bool
+containsThreeVowels str =
+  (length $ filter (\c -> c `elem` ("aeiou" :: [Char])) str) >= 3
+
+
+containsAPair :: String -> Bool
+containsAPair str =
+  any (\pair -> pair `isInfixOf` str) pairs
+  where
+    pairs = group $ sort (['a'..'z'] ++ ['a'..'z'])
+
+
+excludesSpecialPairs :: String -> Bool
+excludesSpecialPairs str =
+  not $ any (\pair -> pair `isInfixOf` str) specialPairs
+  where
+    specialPairs = ["ab", "cd", "pq", "xy"]
+
+
