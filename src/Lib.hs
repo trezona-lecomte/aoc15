@@ -9,7 +9,7 @@ module Lib
     , dayThreeA
     , dayThreeB
     , dayFourAB
-    , dayFiveA
+    , dayFiveAB
     ) where
 
 import           Crypto.Hash.MD5
@@ -198,8 +198,8 @@ performHash key number =
 
 -- Day Five
 
-dayFiveA :: IO ()
-dayFiveA = do
+dayFiveAB :: IO ()
+dayFiveAB = do
   input <- readInput "Five"
   printResult "Five (A)" $ numberOfNiceStringsA input
   printResult "Five (B)" $ numberOfNiceStringsB input
@@ -233,5 +233,46 @@ excludesSpecialPairs str =
   not $ any (\pair -> pair `isInfixOf` str) specialPairs
   where
     specialPairs = ["ab", "cd", "pq", "xy"]
+
+
+numberOfNiceStringsB :: String -> Int
+numberOfNiceStringsB str =
+  length (filter isNiceB $ lines str)
+
+
+isNiceB :: String -> Bool
+isNiceB str =
+  containsRepeatedNonOverlappingPair str && containsRepeatedLetterStraddlingAnother str
+
+
+data Pair =
+  Pair { first :: Char
+       , second :: Char
+       , tailIndex :: Int
+       } deriving Show
+
+instance Eq Pair where
+  (Pair a1 a2 i) == (Pair b1 b2 j) = a1 == b1 && a2 == b2 && (i - j >= 2 || j - i >= 2)
+
+
+containsRepeatedNonOverlappingPair :: String -> Bool
+containsRepeatedNonOverlappingPair str =
+  comparePairs $ constructPairs str
+
+
+constructPairs :: [Char] -> [Pair]
+constructPairs (x:y:xs) = Pair x y (length xs) : constructPairs (y : xs)
+constructPairs [_] = []
+constructPairs [] = []
+
+
+comparePairs :: [Pair] -> Bool
+comparePairs (x:xs) = any (\p -> p == x) xs || comparePairs xs
+comparePairs _ = False
+
+
+containsRepeatedLetterStraddlingAnother :: String -> Bool
+containsRepeatedLetterStraddlingAnother (x:y:z:xs) = x == z || containsRepeatedLetterStraddlingAnother (y : z : xs)
+containsRepeatedLetterStraddlingAnother _ = False
 
 

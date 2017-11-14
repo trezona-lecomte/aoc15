@@ -11,4 +11,4 @@ main = do
   dayThreeA
   dayThreeB
   -- dayFourAB
-  dayFiveA
+  dayFiveAB
